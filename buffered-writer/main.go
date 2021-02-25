@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	os.Create("test.txt")
 	file, err := os.OpenFile("test.txt", os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)

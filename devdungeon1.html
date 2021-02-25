@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"
+      prefix="og: http://ogp.me/ns# content: http://purl.org/rss/1.0/modules/content/ dc: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/ rdfs: http://www.w3.org/2000/01/rdf-schema# sioc: http://rdfs.org/sioc/ns# sioct: http://rdfs.org/sioc/types# skos: http://www.w3.org/2004/02/skos/core# xsd: http://www.w3.org/2001/XMLSchema#">
+<head>
+    <link rel="profile" href="http://www.w3.org/1999/xhtml/vocab"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="shortcut icon" href="https://www.devdungeon.com/sites/all/themes/devdungeon2/favicon.ico"
+          type="image/vnd.microsoft.icon"/>
+    <meta name="description"
+          content="These practical examples will demonstrate how to work with files including: reading, writing, changing permissions and timestamps, archiving(zipping), compressing, checksum hashing, downloading files over HTTP, buffers, scanners, and links. All examples here use the standard library."/>
+    <meta name="generator" content="Drupal 7 (https://www.drupal.org)"/>
+    <link rel="canonical" href="https://www.devdungeon.com/content/working-files-go"/>
+    <link rel="shortlink" href="https://www.devdungeon.com/node/138"/>
+    <meta property="og:site_name" content="DevDungeon"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:url" content="https://www.devdungeon.com/content/working-files-go"/>
+    <meta property="og:title" content="Working with Files in Go"/>
+    <meta property="og:description"
+          content="These practical examples will demonstrate how to work with files including: reading, writing, changing permissions and timestamps, archiving(zipping), compressing, checksum hashing, downloading files over HTTP, buffers, scanners, and links. All examples here use the standard library."/>
+    <meta property="og:updated_time" content="2016-04-17T11:54:33-05:00"/>
+    <meta property="article:published_time" content="2015-08-23T15:17:56-05:00"/>
+    <meta property="article:modified_time" content="2016-04-17T11:54:33-05:00"/>
+    <meta name="dcterms.title" content="Working with Files in Go"/>
+    <meta name="dcterms.creator" content="NanoDano"/>
+    <meta name="dcterms.description"
+          content="These practical examples will demonstrate how to work with files including: reading, writing, changing permissions and timestamps, archiving(zipping), compressing, checksum hashing, downloading files over HTTP, buffers, scanners, and links. All examples here use the standard library."/>
+    <meta name="dcterms.date" content="2015-08-23T15:17-05:00"/>
+    <meta name="dcterms.type" content="Text"/>
+    <meta name="dcterms.format" content="text/html"/>
+    <meta name="dcterms.identifier" content="https://www.devdungeon.com/content/working-files-go"/>
+    <meta name="dcterms.language" content="en"/>
+    <title>Working with Files in Go | DevDungeon</title>
+    <link type="text/css" rel="stylesheet"
+          href="https://www.devdungeon.com/sites/default/files/css/css_lQaZfjVpwP_oGNqdtWCSpJT1EMqXdMiU84ekLLxQnc4.css"
+          media="all"/>
+    <link type="text/css" rel="stylesheet"
+          href="https://www.devdungeon.com/sites/default/files/css/css_drCT3RW3QvBZhuq2WTTyq55k_fzEuqiWFI6N_W3_3qI.css"
+          media="all"/>
+    <link type="text/css" rel="stylesheet"
+          href="https://www.devdungeon.com/sites/default/files/css/css_RQ2JVk93qGnRd2q_Cy8kNtNJek2c1_j11q9Rwx8v1GE.css"
+          media="all"/>
+    <link type="text/css" rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.5/dist/css/bootstrap.min.css" media="all"/>
+    <link type="text/css" rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@unicorn-fail/drupal-bootstrap-styles@0.0.2/dist/3.3.1/7.x-3.x/drupal-bootstrap.min.css"
+          media="all"/>
+    <link type="text/css" rel="stylesheet"
+          href="https://www.devdungeon.com/sites/default/files/css/css_S7uW7EqfiGzoV349Nw8LuCw-260ePlP84yZOc7oKAGE.css"
+          media="all"/>
+    <link type="text/css" rel="stylesheet"
+          href="https://www.devdungeon.com/sites/default/files/css/css_DqiuSTbynplXJ3hy5abg6z0YV95ZsETceC1DnBGkts4.css"
+          media="all"/>
+    <!-- HTML5 element support for IE6-8 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+
+    <script src="https://www.devdungeon.com/sites/default/files/js/js_bHixdNqIm_fGV7c3IlqVJl-OQXz4T0rdcigI0kCjuGg.js"></script>
+    <script src="https://www.devdungeon.com/sites/default/files/js/js_itRbSIFwmIXXAzBj95K4rYG9VewmgrkrpA0P_WEk-S8.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.5/dist/js/bootstrap.min.js"></script>
+    <script src="https://www.devdungeon.com/sites/default/files/js/js_R9UbiVw2xuTUI0GZoaqMDOdX0lrZtgX-ono8RVOUEVc.js"></script>
+    <script src="https://www.devdungeon.com/sites/default/files/js/js_mk8Yt8Jy6gPaSsiuNIEVPBD0G-I0ojJMM5MfRye4mrc.js"></script>
+
+    <script>jQuery.extend(Drupal.settings, {
+            "basePath": "\/",
+            "pathPrefix": "",
+            "ajaxPageState": {
+                "theme": "devdungeon2",
+                "theme_token": "2lVk1DF8c2qZpnDhK0ckXtWoflulNqvgJdoXCLqAnfU",
+                "js": {
+                    "sites\/all\/themes\/bootstrap\/js\/bootstrap.js": 1,
+                    "0": 1,
+                    "sites\/all\/modules\/contrib\/jquery_update\/replace\/jquery\/1.10\/jquery.min.js": 1,
+                    "misc\/jquery-extend-3.4.0.js": 1,
+                    "misc\/jquery-html-prefilter-3.5.0-backport.js": 1,
+                    "misc\/jquery.once.js": 1,
+                    "misc\/drupal.js": 1,
+                    "sites\/all\/libraries\/prettify\/src\/prettify.js": 1,
+                    "sites\/all\/libraries\/prettify\/src\/lang-css.js": 1,
+                    "sites\/all\/libraries\/prettify\/src\/lang-sql.js": 1,
+                    "sites\/all\/libraries\/prettify\/src\/lang-yaml.js": 1,
+                    "https:\/\/cdn.jsdelivr.net\/npm\/bootstrap@3.3.5\/dist\/js\/bootstrap.min.js": 1,
+                    "sites\/all\/modules\/contrib\/admin_menu\/admin_devel\/admin_devel.js": 1,
+                    "sites\/all\/libraries\/colorbox\/jquery.colorbox-min.js": 1,
+                    "sites\/all\/modules\/contrib\/colorbox\/js\/colorbox.js": 1,
+                    "sites\/all\/modules\/contrib\/colorbox\/styles\/default\/colorbox_style.js": 1,
+                    "sites\/all\/modules\/contrib\/prettify\/prettify.loader.js": 1,
+                    "sites\/all\/modules\/contrib\/google_analytics\/googleanalytics.js": 1,
+                    "1": 1,
+                    "sites\/all\/modules\/contrib\/disqus\/disqus.js": 1
+                },
+                "css": {
+                    "modules\/system\/system.base.css": 1,
+                    "modules\/field\/theme\/field.css": 1,
+                    "modules\/node\/node.css": 1,
+                    "sites\/all\/modules\/contrib\/toc_node\/css\/toc_node.css": 1,
+                    "sites\/all\/modules\/contrib\/youtube\/css\/youtube.css": 1,
+                    "sites\/all\/modules\/contrib\/views\/css\/views.css": 1,
+                    "sites\/all\/modules\/contrib\/colorbox\/styles\/default\/colorbox_style.css": 1,
+                    "sites\/all\/modules\/contrib\/ctools\/css\/ctools.css": 1,
+                    "sites\/all\/modules\/contrib\/tagclouds\/tagclouds.css": 1,
+                    "https:\/\/cdn.jsdelivr.net\/npm\/bootstrap@3.3.5\/dist\/css\/bootstrap.min.css": 1,
+                    "https:\/\/cdn.jsdelivr.net\/npm\/@unicorn-fail\/drupal-bootstrap-styles@0.0.2\/dist\/3.3.1\/7.x-3.x\/drupal-bootstrap.min.css": 1,
+                    "sites\/all\/themes\/devdungeon2\/css\/style.css": 1,
+                    "sites\/all\/modules\/contrib\/prettify\/styles\/desert.css": 1
+                }
+            },
+            "colorbox": {
+                "opacity": "0.85",
+                "current": "{current} of {total}",
+                "previous": "\u00ab Prev",
+                "next": "Next \u00bb",
+                "close": "Close",
+                "maxWidth": "98%",
+                "maxHeight": "98%",
+                "fixed": true,
+                "mobiledetect": true,
+                "mobiledevicewidth": "480px",
+                "specificPagesDefaultValue": "admin*\nimagebrowser*\nimg_assist*\nimce*\nnode\/add\/*\nnode\/*\/edit\nprint\/*\nprintpdf\/*\nsystem\/ajax\nsystem\/ajax\/*"
+            },
+            "prettify": {
+                "linenums": false,
+                "match": "article",
+                "nocode": "no-code",
+                "custom": [],
+                "markup": {"code": true, "pre": true, "precode": false}
+            },
+            "googleanalytics": {
+                "trackOutbound": 1,
+                "trackMailto": 1,
+                "trackDownload": 1,
+                "trackDownloadExtensions": "7z|aac|arc|arj|asf|asx|avi|bin|csv|doc(x|m)?|dot(x|m)?|exe|flv|gif|gz|gzip|hqx|jar|jpe?g|js|mp(2|3|4|e?g)|mov(ie)?|msi|msp|pdf|phps|png|ppt(x|m)?|pot(x|m)?|pps(x|m)?|ppam|sld(x|m)?|thmx|qtm?|ra(m|r)?|sea|sit|tar|tgz|torrent|txt|wav|wma|wmv|wpd|xls(x|m|b)?|xlt(x|m)|xlam|xml|z|zip",
+                "trackColorbox": 1
+            },
+            "disqus": {
+                "domain": "devdungeon",
+                "url": "https:\/\/www.devdungeon.com\/content\/working-files-go",
+                "title": "Working with Files in Go",
+                "identifier": "node\/138"
+            },
+            "urlIsAjaxTrusted": {"\/content\/working-files-go": true},
+            "bootstrap": {
+                "anchorsFix": "0",
+                "anchorsSmoothScrolling": "0",
+                "formHasError": 1,
+                "popoverEnabled": 1,
+                "popoverOptions": {
+                    "animation": 1,
+                    "html": 0,
+                    "placement": "right",
+                    "selector": "",
+                    "trigger": "click",
+                    "triggerAutoclose": 1,
+                    "title": "",
+                    "content": "",
+                    "delay": 0,
+                    "container": "body"
+                },
+                "tooltipEnabled": 1,
+                "tooltipOptions": {
+                    "animation": 1,
+                    "html": 0,
+                    "placement": "auto left",
+                    "selector": "",
+                    "trigger": "hover focus",
+                    "delay": 0,
+                    "container": "body"
+                }
+            }
+        });</script>
+
+
+    <style>
+        /* popdown from top menu */
+        #popdown {
+            position: absolute;
+            z-index: 101;
+            top: -20px;
+            left: 0;
+            right: 0;
+            background: #005c52;
+            text-align: center;
+            line-height: 2.5;
+            overflow: hidden;
+            -webkit-box-shadow: 0 0 5px black;
+            -moz-box-shadow: 0 0 5px black;
+            box-shadow: 0 0 5px black;
+        }
+
+        @-webkit-keyframes slideDown {
+            0%, 100% {
+                -webkit-transform: translateY(-50px);
+            }
+            10%, 90% {
+                -webkit-transform: translateY(0px);
+            }
+        }
+
+        @-moz-keyframes slideDown {
+            0%, 100% {
+                -moz-transform: translateY(-50px);
+            }
+            10%, 90% {
+                -moz-transform: translateY(0px);
+            }
+        }
+
+        .cssanimations.csstransforms #popdown {
+            -webkit-transform: translateY(-50px);
+            -webkit-animation: slideDown 2.5s 1.0s 1 ease forwards;
+            -moz-transform: translateY(-50px);
+            -moz-animation: slideDown 2.5s 1.0s 1 ease forwards;
+        }
+
+        .cssanimations.csstransforms #close {
+            display: none;
+        }
+
+        /* end popdown from top */
+    </style>
+
+
+
+
+</head>
+<body class="html not-front not-logged-in one-sidebar sidebar-second page-node page-node- page-node-138 node-type-blog">
+
+
+
+
+<div id="skip-link">
+    <a href="#main-content" class="element-invisible element-focusable">Skip to main content</a>
+</div>
+<header id="navbar" role="banner" class="navbar container navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="logo navbar-btn pull-left" href="/" title="Home">
+                <img src="https://www.devdungeon.com/sites/all/themes/devdungeon2/logo.png" alt="Home"/>
+            </a>
+
+            <a class="name navbar-brand" href="/" title="Home">DevDungeon</a>
+
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+
+        <div class="navbar-collapse collapse" id="navbar-collapse">
+            <nav role="navigation">
+                <ul class="menu nav navbar-nav">
+                    <li class="first leaf"><a href="/" title="">Home</a></li>
+                    <li class="expanded dropdown"><a href="/content/languages" title="Programming languages"
+                                                     class="dropdown-toggle" data-toggle="dropdown">Languages <span
+                                    class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li class="first leaf"><a href="/content/languages"
+                                                      title="List to all programming language pages">-- See all
+                                    languages --</a></li>
+                            <li class="leaf"><a href="/content/c" title="">C/C++</a></li>
+                            <li class="leaf"><a href="/content/go" title="Go posts">Go</a></li>
+                            <li class="leaf"><a href="/content/python"
+                                                title="Resources for Python programmers">Python</a></li>
+                            <li class="leaf"><a href="/content/javascript" title="">JavaScript/TypeScript</a></li>
+                            <li class="leaf"><a href="/content/java" title="">Java</a></li>
+                            <li class="leaf"><a href="/content/php" title="PHP posts">PHP</a></li>
+                            <li class="last leaf"><a href="/content/ruby" title="Ruby posts">Ruby</a></li>
+                        </ul>
+                    </li>
+                    <li class="expanded dropdown"><a href="/topics" title="Categories of posts" class="dropdown-toggle"
+                                                     data-toggle="dropdown">Topics <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li class="first leaf"><a href="/topics" title="All topics/tags">-- See all topics --</a>
+                            </li>
+                            <li class="leaf"><a href="/content/android" title="Android related posts">Android</a></li>
+                            <li class="leaf"><a href="/content/arduino" title="Arduino posts">Arduino</a></li>
+                            <li class="leaf"><a href="/content/minecraft" title="Minecraft related things">Minecraft</a>
+                            </li>
+                            <li class="leaf"><a href="/content/philosophy-soft-skills"
+                                                title="Philosophy and soft skill topics">Philosophy &amp; Soft
+                                    Skills</a></li>
+                            <li class="leaf"><a href="/content/sqlite" title="SQlite3 tutorials">SQLite</a></li>
+                            <li class="last leaf"><a href="/content/sysadmin"
+                                                     title="System administrator related posts">Sysadmin</a></li>
+                        </ul>
+                    </li>
+                    <li class="expanded dropdown"><a href="/projects" title="DevDungeon Software Projects"
+                                                     class="dropdown-toggle" data-toggle="dropdown">Projects <span
+                                    class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li class="first leaf"><a href="/projects" title="DevDungeon Software Projects">-- See all
+                                    Projects --</a></li>
+                            <li class="leaf"><a href="/content/cathy-chat-bot"
+                                                title="AI chat bot for Discord written in Python using AIML library">Cathy
+                                    Chat Bot</a></li>
+                            <li class="leaf"><a href="/cookbook" title="">Cookbook</a></li>
+                            <li class="leaf"><a href="/devnix" title="DevNix: a Fedora Remix">DevNix</a></li>
+                            <li class="last leaf"><a href="/content/issh">ISSH</a></li>
+                        </ul>
+                    </li>
+                    <li class="last leaf"><a href="/archive" title="All blog posts and videos">Archive</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<div class="main-container container">
+
+    <header role="banner" id="page-header">
+
+    </header> <!-- /#page-header -->
+
+    <div class="row">
+
+
+        <section class="col-sm-9">
+            <a id="main-content"></a>
+            <h1 class="page-header">Working with Files in Go</h1>
+            <div class="region region-content">
+
+                <section id="block-system-main" class="block block-system clearfix">
+
+
+                    <article id="node-138" class="node node-blog node-promoted clearfix"
+                             about="/content/working-files-go" typeof="sioc:Post sioct:BlogPost">
+                        <header>
+                            <span property="dc:title" content="Working with Files in Go"
+                                  class="rdf-meta element-hidden"></span></header>
+                        <span class="submitted">
+        <span property="dc:date dc:created" content="2015-08-23T15:17:56-05:00" datatype="xsd:dateTime"
+              rel="sioc:has_creator">Submitted by <a href="/users/nanodano" title="View user profile." class="username"
+                                                     xml:lang="" about="/users/nanodano" typeof="sioc:UserAccount"
+                                                     property="foaf:name" datatype="">NanoDano</a> on Sun, 08/23/2015 - 15:17</span>    </span>
+                        <div class="field field-name-body field-type-text-with-summary field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even" property="content:encoded"><a name="overview"></a>
+                                    <ul>
+                                        <li><strong>Intro</strong></li>
+                                        <ul>
+                                            <li><a href="#everything_is_a_file">Everything is a File</a></li>
+                                        </ul>
+
+                                        <li><strong>Basic Operations</strong></li>
+                                        <ul>
+                                            <li><a href="#create_empty_file">Create Empty File</a></li>
+                                            <li><a href="#truncate_file">Truncate a File</a></li>
+                                            <li><a href="#get_file_info">Get File Info</a></li>
+                                            <li><a href="#rename_move">Rename and Move a File</a></li>
+                                            <li><a href="#delete">Delete Files</a></li>
+                                            <li><a href="#open_close">Open and Close Files</a></li>
+                                            <li><a href="#check_if_exists">Check if File Exists</a></li>
+                                            <li><a href="#check_perms">Check Read and Write Permissions</a></li>
+                                            <li><a href="#change_metadata">Change Permissions, Ownership, and
+                                                    Timestamps</a></li>
+                                            <li><a href="#links">Create Hard Links and Symlinks</a></li>
+                                        </ul>
+                                        <li><strong>Reading and Writing</strong></li>
+                                        <ul>
+                                            <li><a href="#copy">Copy a File</a></li>
+                                            <li><a href="#seek">Seek Positions in File</a></li>
+                                            <li><a href="#write_bytes">Write Bytes to a File</a></li>
+                                            <li><a href="#write_quick">Quick Write to File</a></li>
+                                            <li><a href="#write_buffered">Use Buffered Writer</a></li>
+                                            <li><a href="#read_up_to_n_bytes">Read up to n Bytes from File</a></li>
+                                            <li><a href="#read_exactly_n_bytes">Read Exactly n Bytes</a></li>
+                                            <li><a href="#read_at_least_n_bytes">Read At Least n Bytes</a></li>
+                                            <li><a href="#read_all">Read All Bytes of File</a></li>
+                                            <li><a href="#read_quick">Quick Read Whole File to Memory</a></li>
+                                            <li><a href="#read_buffered">Use Buffered Reader</a></li>
+                                            <li><a href="#read_scanner">Read with a Scanner</a></li>
+                                        </ul>
+                                        <li><strong>Archiving(Zipping)</strong></li>
+                                        <ul>
+                                            <li><a href="#archive_create">Archive(Zip) Files</a></li>
+                                            <li><a href="#archive_extract">Extract(Unzip) Archived Files</a></li>
+                                        </ul>
+                                        <li><strong>Compressing</strong></li>
+                                        <ul>
+                                            <li><a href="#compress">Compress a File</a></li>
+                                            <li><a href="#uncompress">Uncompress a File</a></li>
+                                        </ul>
+                                        <li><strong>Misc</strong></li>
+                                        <ul>
+                                            <li><a href="#temp_files">Temporary Files and Directories</a></li>
+                                            <li><a href="#http_download">Downloading a File Over HTTP</a></li>
+                                            <li><a href="#hashing">Hashing and Checksums</a></li>
+                                        </ul>
+                                    </ul>
+
+
+                                    <a name="everything_is_a_file"></a>
+                                    <h2>Everything is a File</h2>
+
+                                    <p>One of the fundamental aspects of UNIX is that everything is a file. We don't
+                                        necessarily know what the file descriptor maps to, that is abstracted by the
+                                        operating system's device drivers. The operating system provides us an interface
+                                        to the device in the form of a file.</p>
+
+                                    <p>The reader and writer interfaces in Go are similar abstractions. We simply read
+                                        and write bytes, without the need to understand where or how the reader gets its
+                                        data or where the writer is sending the data. Look in <strong>/dev</strong>
+                                        to find available devices. Some will require elevated privileges to access.
+                                    </p>
+
+
+                                    <a name="create_empty_file"></a>
+                                    <h2>Create Empty File</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>)<br/><br/>var (<br/>&nbsp;&nbsp;&nbsp; newFile *os.File<br/>&nbsp;&nbsp;&nbsp; err&nbsp;&nbsp;&nbsp;&nbsp; error<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; newFile, err = os.Create(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; log.Println(newFile)<br/>&nbsp;&nbsp;&nbsp; newFile.Close()<br/>}</code></pre>
+
+
+                                    <a name="truncate_file"></a>
+                                    <h2>Truncate a File</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Truncate a file to 100 bytes. If file<br/>&nbsp;&nbsp;&nbsp; // is less than 100 bytes the original contents will remain<br/>&nbsp;&nbsp;&nbsp; // at the beginning, and the rest of the space is<br/>&nbsp;&nbsp;&nbsp; // filled will null bytes. If it is over 100 bytes,<br/>&nbsp;&nbsp;&nbsp; // Everything past 100 bytes will be lost. Either way<br/>&nbsp;&nbsp;&nbsp; // we will end up with exactly 100 bytes.<br/>&nbsp;&nbsp;&nbsp; // Pass in 0 to truncate to a completely empty file<br/><br/>&nbsp;&nbsp;&nbsp; err := os.Truncate(&quot;test.txt&quot;, 100)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>}</code></pre>
+
+
+                                    <a name="get_file_info"></a>
+                                    <h2>Get File Info</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;fmt&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>)<br/><br/>var (<br/>&nbsp;&nbsp;&nbsp; fileInfo os.FileInfo<br/>&nbsp;&nbsp;&nbsp; err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; error<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Stat returns file info. It will return<br/>&nbsp;&nbsp;&nbsp; // an error if there is no file.<br/>&nbsp;&nbsp;&nbsp; fileInfo, err = os.Stat(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; fmt.Println(&quot;File name:&quot;, fileInfo.Name())<br/>&nbsp;&nbsp;&nbsp; fmt.Println(&quot;Size in bytes:&quot;, fileInfo.Size())<br/>&nbsp;&nbsp;&nbsp; fmt.Println(&quot;Permissions:&quot;, fileInfo.Mode())<br/>&nbsp;&nbsp;&nbsp; fmt.Println(&quot;Last modified:&quot;, fileInfo.ModTime())<br/>&nbsp;&nbsp;&nbsp; fmt.Println(&quot;Is Directory: &quot;, fileInfo.IsDir())<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;System interface type: %T\n&quot;, fileInfo.Sys())<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;System info: %+v\n\n&quot;, fileInfo.Sys())<br/>}</code></pre>
+
+
+                                    <a name="rename_move"></a>
+                                    <h2>Rename and Move a File</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; originalPath := &quot;test.txt&quot;<br/>&nbsp;&nbsp;&nbsp; newPath := &quot;test2.txt&quot;<br/>&nbsp;&nbsp;&nbsp; err := os.Rename(originalPath, newPath)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>}</code></pre>
+
+
+                                    <a name="delete"></a>
+                                    <h2>Delete a File</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; err := os.Remove(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>}</code></pre>
+
+
+                                    <a name="open_close"></a>
+                                    <h2>Open and Close Files</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Simple read only open. We will cover actually reading<br/>&nbsp;&nbsp;&nbsp; // and writing to files in examples further down the page<br/>&nbsp;&nbsp;&nbsp; file, err := os.Open(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; file.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // OpenFile with more options. Last param is the permission mode<br/>&nbsp;&nbsp;&nbsp; // Second param is the attributes when opening<br/>&nbsp;&nbsp;&nbsp; file, err = os.OpenFile(&quot;test.txt&quot;, os.O_APPEND, 0666)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; file.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // Use these attributes individually or combined<br/>&nbsp;&nbsp;&nbsp; // with an OR for second arg of OpenFile()<br/>&nbsp;&nbsp;&nbsp; // e.g. os.O_CREATE|os.O_APPEND<br/>&nbsp;&nbsp;&nbsp; // or os.O_CREATE|os.O_TRUNC|os.O_WRONLY<br/><br/>&nbsp;&nbsp;&nbsp; // os.O_RDONLY // Read only<br/>&nbsp;&nbsp;&nbsp; // os.O_WRONLY // Write only<br/>&nbsp;&nbsp;&nbsp; // os.O_RDWR // Read and write<br/>&nbsp;&nbsp;&nbsp; // os.O_APPEND // Append to end of file<br/>&nbsp;&nbsp;&nbsp; // os.O_CREATE // Create is none exist<br/>&nbsp;&nbsp;&nbsp; // os.O_TRUNC // Truncate file when opening<br/>}</code></pre>
+
+
+                                    <a name="check_if_exists"></a>
+                                    <h2>Check if File Exists</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>)<br/><br/>var (<br/>&nbsp;&nbsp;&nbsp; fileInfo *os.FileInfo<br/>&nbsp;&nbsp;&nbsp; err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; error<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Stat returns file info. It will return<br/>&nbsp;&nbsp;&nbsp; // an error if there is no file.<br/>&nbsp;&nbsp;&nbsp; fileInfo, err := os.Stat(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if os.IsNotExist(err) {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(&quot;File does not exist.&quot;)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; log.Println(&quot;File does exist. File information:&quot;)<br/>&nbsp;&nbsp;&nbsp; log.Println(fileInfo)<br/>}</code></pre>
+
+
+                                    <a name="check_perms"></a>
+                                    <h2>Check Read and Write Permissions</h2>
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Test write permissions. It is possible the file<br/>&nbsp;&nbsp;&nbsp; // does not exist and that will return a different<br/>&nbsp;&nbsp;&nbsp; // error that can be checked with os.IsNotExist(err)<br/>&nbsp;&nbsp;&nbsp; file, err := os.OpenFile(&quot;test.txt&quot;, os.O_WRONLY, 0666)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if os.IsPermission(err) {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Println(&quot;Error: Write permission denied.&quot;)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; file.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // Test read permissions<br/>&nbsp;&nbsp;&nbsp; file, err = os.OpenFile(&quot;test.txt&quot;, os.O_RDONLY, 0666)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if os.IsPermission(err) {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Println(&quot;Error: Read permission denied.&quot;)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; file.Close()<br/>}</code></pre>
+
+
+                                    <a name="change_metadata"></a>
+                                    <h2>Change Permissions, Ownership, and Timestamps</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;time&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Change perrmissions using Linux style<br/>&nbsp;&nbsp;&nbsp; err := os.Chmod(&quot;test.txt&quot;, 0777)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Println(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // Change ownership<br/>&nbsp;&nbsp;&nbsp; err = os.Chown(&quot;test.txt&quot;, os.Getuid(), os.Getgid())<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Println(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // Change timestamps<br/>&nbsp;&nbsp;&nbsp; twoDaysFromNow := time.Now().Add(48 * time.Hour)<br/>&nbsp;&nbsp;&nbsp; lastAccessTime := twoDaysFromNow<br/>&nbsp;&nbsp;&nbsp; lastModifyTime := twoDaysFromNow<br/>&nbsp;&nbsp;&nbsp; err = os.Chtimes(&quot;test.txt&quot;, lastAccessTime, lastModifyTime)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Println(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>}</code></pre>
+
+
+                                    <a name="links"></a>
+                                    <h2>Hard Links and Symlinks</h2>
+
+                                    <p>A typical file is just a pointer to a place on the hard disk called an inode. A
+                                        hard link creates a new pointer to the same place. A file will only be deleted
+                                        from disk after all links are removed. Hard links only work on the same file
+                                        system. A hard link is what you might consider a 'normal' link.</p>
+
+                                    <p>A symbolic link, or soft link, is a little different, it does not point directly
+                                        to a place on the disk. Symlinks only reference other files by name. They can
+                                        point to files on different filesystems. Not all systems support symlinks.</p>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;fmt&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Create a hard link<br/>&nbsp;&nbsp;&nbsp; // You will have two file names that point to the same contents<br/>&nbsp;&nbsp;&nbsp; // Changing the contents of one will change the other<br/>&nbsp;&nbsp;&nbsp; // Deleting/renaming one will not affect the other<br/>&nbsp;&nbsp;&nbsp; err := os.Link(&quot;original.txt&quot;, &quot;original_also.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>fmt.Println(&quot;creating sym&quot;)<br/>&nbsp;&nbsp;&nbsp; // Create a symlink<br/>&nbsp;&nbsp;&nbsp; err = os.Symlink(&quot;original.txt&quot;, &quot;original_sym.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // Lstat will return file info, but if it is actually<br/>&nbsp;&nbsp;&nbsp; // a symlink, it will return info about the symlink.<br/>&nbsp;&nbsp;&nbsp; // It will not follow the link and give information<br/>&nbsp;&nbsp;&nbsp; // about the real file<br/>&nbsp;&nbsp;&nbsp; // Symlinks do not work in Windows<br/>&nbsp;&nbsp;&nbsp; fileInfo, err := os.Lstat(&quot;original_sym.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Link info: %+v&quot;, fileInfo)<br/><br/>&nbsp;&nbsp;&nbsp; // Change ownership of a symlink only <br/>&nbsp;&nbsp;&nbsp; // and not the file it points to<br/>&nbsp;&nbsp;&nbsp; err = os.Lchown(&quot;original_sym.txt&quot;, os.Getuid(), os.Getgid())<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>}</code></pre>
+
+
+                                    <a name="copy"></a>
+                                    <h2>Copy a File</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;io&quot;<br/>)<br/><br/>// Copy a file<br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Open original file<br/>&nbsp;&nbsp;&nbsp; originalFile, err := os.Open(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; defer originalFile.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // Create new file<br/>&nbsp;&nbsp;&nbsp; newFile, err := os.Create(&quot;test_copy.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; defer newFile.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // Copy the bytes to destination from source<br/>&nbsp;&nbsp;&nbsp; bytesWritten, err := io.Copy(newFile, originalFile)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Copied %d bytes.&quot;, bytesWritten)<br/>&nbsp;&nbsp;&nbsp; <br/>&nbsp;&nbsp;&nbsp; // Commit the file contents<br/>&nbsp;&nbsp;&nbsp; // Flushes memory to disk<br/>&nbsp;&nbsp;&nbsp; err = newFile.Sync()<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>}</code></pre>
+
+
+                                    <a name="seek"></a>
+                                    <h2>Seek Positions in File</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;fmt&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; file, _ := os.Open(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; defer file.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // Offset is how many bytes to move<br/>&nbsp;&nbsp;&nbsp; // Offset can be positive or negative<br/>&nbsp;&nbsp;&nbsp; var offset int64 = 5<br/><br/>&nbsp;&nbsp;&nbsp; // Whence is the point of reference for offset<br/>&nbsp;&nbsp;&nbsp; // 0 = Beginning of file<br/>&nbsp;&nbsp;&nbsp; // 1 = Current position<br/>&nbsp;&nbsp;&nbsp; // 2 = End of file<br/>&nbsp;&nbsp;&nbsp; var whence int = 0<br/>&nbsp;&nbsp;&nbsp; newPosition, err := file.Seek(offset, whence)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; fmt.Println(&quot;Just moved to 5:&quot;, newPosition)<br/><br/>&nbsp;&nbsp;&nbsp; // Go back 2 bytes from current position<br/>&nbsp;&nbsp;&nbsp; newPosition, err = file.Seek(-2, 1)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; fmt.Println(&quot;Just moved back two:&quot;, newPosition)<br/><br/>&nbsp;&nbsp;&nbsp; // Find the current position by getting the<br/>&nbsp;&nbsp;&nbsp; // return value from Seek after moving 0 bytes<br/>&nbsp;&nbsp;&nbsp; currentPosition, err := file.Seek(0, 1)<br/>&nbsp;&nbsp;&nbsp; fmt.Println(&quot;Current position:&quot;, currentPosition)<br/><br/>&nbsp;&nbsp;&nbsp; // Go to beginning of file<br/>&nbsp;&nbsp;&nbsp; newPosition, err = file.Seek(0, 0)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; fmt.Println(&quot;Position after seeking 0,0:&quot;, newPosition)<br/>}</code></pre>
+
+
+                                    <a name="write_bytes"></a>
+                                    <h2>Write Bytes to a File</h2>
+
+                                    <p>You can write using just the os package which is needed already to open the file.
+                                        Since all Go executables are statically linked binaries, every package you
+                                        import increases the size of your executable. Other packages like
+                                        <strong>io</strong>, <strong>ioutil</strong>, and <strong>bufio</strong> provide
+                                        some more help, but they are not necessary.</p>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Open a new file for writing only<br/>&nbsp;&nbsp;&nbsp; file, err := os.OpenFile(<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;test.txt&quot;,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; os.O_WRONLY|os.O_TRUNC|os.O_CREATE,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0666,<br/>&nbsp;&nbsp;&nbsp; )<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; defer file.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // Write bytes to file<br/>&nbsp;&nbsp;&nbsp; byteSlice := []byte(&quot;Bytes!\n&quot;)<br/>&nbsp;&nbsp;&nbsp; bytesWritten, err := file.Write(byteSlice)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Wrote %d bytes.\n&quot;, bytesWritten)<br/>}</code></pre>
+
+
+                                    <a name="write_quick"></a>
+                                    <h2>Quick Write to File</h2>
+
+                                    <p>The <strong>ioutil</strong> package has a useful function called
+                                        <strong>WriteFile()</strong> that will handle
+                                        creating/opening, writing a slice of bytes, and closing. It is useful if you
+                                        just need a quick way to dump a slice of bytes to a file.</p>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;io/ioutil&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; err := ioutil.WriteFile(&quot;test.txt&quot;, []byte(&quot;Hi\n&quot;), 0666)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>}</code></pre>
+
+
+                                    <a name="write_buffered"></a>
+                                    <h2>Use Buffered Writer</h2>
+
+                                    <p>The <strong>bufio</strong> package lets you create a buffered writer so you can
+                                        work with a buffer in memory before writing it to disk. This is useful if you
+                                        need to do a lot manipulation on the data before writing it to disk to save time
+                                        from disk IO. It is also useful if you only write one byte at a time and want to
+                                        store a large number
+                                        in memory before dumping it to file at once, otherwise you would be performing
+                                        disk IO for every byte. That puts wear and tear on your disk as well as slows
+                                        down the process.</p>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;bufio&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Open file for writing<br/>&nbsp;&nbsp;&nbsp; file, err := os.OpenFile(&quot;test.txt&quot;, os.O_WRONLY, 0666)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; defer file.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // Create a buffered writer from the file<br/>&nbsp;&nbsp;&nbsp; bufferedWriter := bufio.NewWriter(file)<br/><br/>&nbsp;&nbsp;&nbsp; // Write bytes to buffer<br/>&nbsp;&nbsp;&nbsp; bytesWritten, err := bufferedWriter.Write(<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; []byte{65, 66, 67},<br/>&nbsp;&nbsp;&nbsp; )<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Bytes written: %d\n&quot;, bytesWritten)<br/><br/>&nbsp;&nbsp;&nbsp; // Write string to buffer<br/>&nbsp;&nbsp;&nbsp; // Also available are WriteRune() and WriteByte()&nbsp;&nbsp; <br/>&nbsp;&nbsp;&nbsp; bytesWritten, err = bufferedWriter.WriteString(<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;Buffered string\n&quot;,<br/>&nbsp;&nbsp;&nbsp; )<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Bytes written: %d\n&quot;, bytesWritten)<br/><br/>&nbsp;&nbsp;&nbsp; // Check how much is stored in buffer waiting<br/>&nbsp;&nbsp;&nbsp; unflushedBufferSize := bufferedWriter.Buffered()<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Bytes buffered: %d\n&quot;, unflushedBufferSize)<br/><br/>&nbsp;&nbsp;&nbsp; // See how much buffer is available<br/>&nbsp;&nbsp;&nbsp; bytesAvailable := bufferedWriter.Available()<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Available buffer: %d\n&quot;, bytesAvailable)<br/><br/>&nbsp;&nbsp;&nbsp; // Write memory buffer to disk<br/>&nbsp;&nbsp;&nbsp; bufferedWriter.Flush()<br/><br/>&nbsp;&nbsp;&nbsp; // Revert any changes done to buffer that have<br/>&nbsp;&nbsp;&nbsp; // not yet been written to file with Flush()<br/>&nbsp;&nbsp;&nbsp; // We just flushed, so there are no changes to revert<br/>&nbsp;&nbsp;&nbsp; // The writer that you pass as an argument<br/>&nbsp;&nbsp;&nbsp; // is where the buffer will output to, if you want<br/>&nbsp;&nbsp;&nbsp; // to change to a new writer<br/>&nbsp;&nbsp;&nbsp; bufferedWriter.Reset(bufferedWriter) <br/><br/>&nbsp;&nbsp;&nbsp; // See how much buffer is available<br/>&nbsp;&nbsp;&nbsp; bytesAvailable = bufferedWriter.Available()<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Available buffer: %d\n&quot;, bytesAvailable)<br/><br/>&nbsp;&nbsp;&nbsp; // Resize buffer. The first argument is a writer<br/>&nbsp;&nbsp;&nbsp; // where the buffer should output to. In this case<br/>&nbsp;&nbsp;&nbsp; // we are using the same buffer. If we chose a number<br/>&nbsp;&nbsp;&nbsp; // that was smaller than the existing buffer, like 10<br/>&nbsp;&nbsp;&nbsp; // we would not get back a buffer of size 10, we will<br/>&nbsp;&nbsp;&nbsp; // get back a buffer the size of the original since<br/>&nbsp;&nbsp;&nbsp; // it was already large enough (default 4096)<br/>&nbsp;&nbsp;&nbsp; bufferedWriter = bufio.NewWriterSize(<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bufferedWriter,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8000,<br/>&nbsp;&nbsp;&nbsp; )<br/><br/>&nbsp;&nbsp;&nbsp; // Check available buffer size after resizing<br/>&nbsp;&nbsp;&nbsp; bytesAvailable = bufferedWriter.Available()<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Available buffer: %d\n&quot;, bytesAvailable)<br/>}</code></pre>
+
+
+                                    <a name="read_up_to_n_bytes"></a>
+                                    <h2>Read up to n Bytes from File</h2>
+
+                                    <p>The <strong>os.File</strong> type provides a couple basic functions. The <strong>io</strong>,
+                                        <strong>ioutil</strong>, and <strong>bufio</strong> packages provided additional
+                                        functions for working with files.</p>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Open file for reading<br/>&nbsp;&nbsp;&nbsp; file, err := os.Open(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; defer file.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // Read up to len(b) bytes from the File<br/>&nbsp;&nbsp;&nbsp; // Zero bytes written means end of file<br/>&nbsp;&nbsp;&nbsp; // End of file returns error type io.EOF<br/>&nbsp;&nbsp;&nbsp; byteSlice := make([]byte, 16)<br/>&nbsp;&nbsp;&nbsp; bytesRead, err := file.Read(byteSlice)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Number of bytes read: %d\n&quot;, bytesRead)<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Data read: %s\n&quot;, byteSlice)<br/>}</code></pre>
+
+
+                                    <a name="read_exactly_n_bytes"></a>
+                                    <h2>Read Exactly n Bytes</h2>
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;io&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Open file for reading<br/>&nbsp;&nbsp;&nbsp; file, err := os.Open(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // The file.Read() function will happily read a tiny file in to a large<br/>&nbsp;&nbsp;&nbsp; // byte slice, but io.ReadFull() will return an<br/>&nbsp;&nbsp;&nbsp; // error if the file is smaller than the byte slice.<br/>&nbsp;&nbsp;&nbsp; byteSlice := make([]byte, 2)<br/>&nbsp;&nbsp;&nbsp; numBytesRead, err := io.ReadFull(file, byteSlice)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Number of bytes read: %d\n&quot;, numBytesRead)<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Data read: %s\n&quot;, byteSlice)<br/>}</code></pre>
+
+
+                                    <a name="read_at_least_n_bytes"></a>
+                                    <h2>Read At Least n Bytes</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;io&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Open file for reading<br/>&nbsp;&nbsp;&nbsp; file, err := os.Open(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; byteSlice := make([]byte, 512)<br/>&nbsp;&nbsp;&nbsp; minBytes := 8<br/>&nbsp;&nbsp;&nbsp; // io.ReadAtLeast() will return an error if it cannot<br/>&nbsp;&nbsp;&nbsp; // find at least minBytes to read. It will read as<br/>&nbsp;&nbsp;&nbsp; // many bytes as byteSlice can hold. <br/>&nbsp;&nbsp;&nbsp; numBytesRead, err := io.ReadAtLeast(file, byteSlice, minBytes)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Number of bytes read: %d\n&quot;, numBytesRead)<br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Data read: %s\n&quot;, byteSlice)<br/>}</code></pre>
+
+                                    <a name="read_all"></a>
+                                    <h2>Read All Bytes of File</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;fmt&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;io/ioutil&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Open file for reading<br/>&nbsp;&nbsp;&nbsp; file, err := os.Open(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // os.File.Read(), io.ReadFull(), and<br/>&nbsp;&nbsp;&nbsp; // io.ReadAtLeast() all work with a fixed<br/>&nbsp;&nbsp;&nbsp; // byte slice that you make before you read<br/><br/>&nbsp;&nbsp;&nbsp; // ioutil.ReadAll() will read every byte<br/>&nbsp;&nbsp;&nbsp; // from the reader (in this case a file),<br/>&nbsp;&nbsp;&nbsp; // and return a slice of unknown slice<br/>&nbsp;&nbsp;&nbsp; data, err := ioutil.ReadAll(file)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Data as hex: %x\n&quot;, data)<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Data as string: %s\n&quot;, data)<br/>&nbsp;&nbsp;&nbsp; fmt.Println(&quot;Number of bytes read:&quot;, len(data))<br/>}</code></pre>
+
+
+                                    <a name="read_quick"></a>
+                                    <h2>Quick Read Whole File to Memory</h2>
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;io/ioutil&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Read file to byte slice<br/>&nbsp;&nbsp;&nbsp; data, err := ioutil.ReadFile(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; log.Printf(&quot;Data read: %s\n&quot;, data)<br/>}</code></pre>
+
+
+                                    <a name="read_buffered"></a>
+                                    <h2>Use Buffered Reader</h2>
+
+                                    <p>Creating a buffered reader will store a memory buffer with some of the contents.
+                                        A buffered
+                                        reader also provides some more functions that are not available on the <strong>os.File</strong>
+                                        type or the <strong>io.Reader</strong>. Default buffer size is 4096 and minimum
+                                        size is 16.</p>
+
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;bufio&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;fmt&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Open file and create a buffered reader on top<br/>&nbsp;&nbsp;&nbsp; file, err := os.Open(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; bufferedReader := bufio.NewReader(file)<br/><br/>&nbsp;&nbsp;&nbsp; // Get bytes without advancing pointer<br/>&nbsp;&nbsp;&nbsp; byteSlice := make([]byte, 5)<br/>&nbsp;&nbsp;&nbsp; byteSlice, err = bufferedReader.Peek(5)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Peeked at 5 bytes: %s\n&quot;, byteSlice)<br/><br/>&nbsp;&nbsp;&nbsp; // Read and advance pointer<br/>&nbsp;&nbsp;&nbsp; numBytesRead, err := bufferedReader.Read(byteSlice)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Read %d bytes: %s\n&quot;, numBytesRead, byteSlice)<br/><br/>&nbsp;&nbsp;&nbsp; // Ready 1 byte. Error if no byte to read<br/>&nbsp;&nbsp;&nbsp; myByte, err := bufferedReader.ReadByte()<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Read 1 byte: %c\n&quot;, myByte)&nbsp;&nbsp;&nbsp;&nbsp; <br/><br/>&nbsp;&nbsp;&nbsp; // Read up to and including delimiter<br/>&nbsp;&nbsp;&nbsp; // Returns byte slice<br/>&nbsp;&nbsp;&nbsp; dataBytes, err := bufferedReader.ReadBytes(&#039;\n&#039;) <br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Read bytes: %s\n&quot;, dataBytes)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br/><br/>&nbsp;&nbsp;&nbsp; // Read up to and including delimiter<br/>&nbsp;&nbsp;&nbsp; // Returns string&nbsp;&nbsp; <br/>&nbsp;&nbsp;&nbsp; dataString, err := bufferedReader.ReadString(&#039;\n&#039;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Read string: %s\n&quot;, dataString)&nbsp;&nbsp;&nbsp;&nbsp; <br/><br/>&nbsp;&nbsp;&nbsp; // This example reads a few lines so test.txt<br/>&nbsp;&nbsp;&nbsp; // should have a few lines of text to work correct<br/>}</code></pre>
+
+
+                                    <a name="read_scanner"></a>
+                                    <h2>Read with a Scanner</h2>
+
+                                    <p><strong>Scanner</strong> is part of the <strong>bufio</strong> package. It is
+                                        useful for stepping
+                                        through files at specific delimiters. Commonly, the newline character is used as
+                                        the delimiter to break up a file by lines. In a CSV file, commas would be the
+                                        delimiter. The <strong>os.File</strong> can be wrapped in a <strong>bufio.Scanner</strong>
+                                        just like a buffered reader. We call <strong>Scan()</strong> to read up to the
+                                        next delimiter,
+                                        and then use <strong>Text()</strong> or <strong>Bytes()</strong> to get the data
+                                        that was read.
+                                    </p>
+
+                                    <p>The delimiter is not just a simple byte or character. There is actually a special
+                                        function you have to implement that will determine where the next delimiter is,
+                                        how far forward to advance the pointer, and what data to return. If no custom
+                                        <strong>SplitFunc</strong> is provided, it defaults to
+                                        <strong>ScanLines</strong> which will split at every
+                                        newline character. Other split functions included in <strong>bufio</strong> are
+                                        <strong>ScanRunes</strong>, and <strong>ScanWords</strong>.
+
+                                    <pre class="prettyprint"><code>// To define your own split function, match this fingerprint<br/>type SplitFunc func(data []byte, atEOF bool) (advance int, token []byte, err error)<br/><br/>// Returning (0, nil, nil) will tell the scanner<br/>// to scan again, but with a bigger buffer because<br/>// it wasn&#039;t enough data to reach the delimiter</code></pre>
+
+                                    <p>In the next example, a <strong>bufio.Scanner</strong> is created from the file,
+                                        and then
+                                        we scan read the file word by word.</p>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;fmt&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;bufio&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Open file and create scanner on top of it<br/>&nbsp;&nbsp;&nbsp; file, err := os.Open(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; scanner := bufio.NewScanner(file)<br/><br/>&nbsp;&nbsp;&nbsp; // Default scanner is bufio.ScanLines. Lets use ScanWords.<br/>&nbsp;&nbsp;&nbsp; // Could also use a custom function of SplitFunc type<br/>&nbsp;&nbsp;&nbsp; scanner.Split(bufio.ScanWords)<br/><br/>&nbsp;&nbsp;&nbsp; // Scan for next token. <br/>&nbsp;&nbsp;&nbsp; success := scanner.Scan() <br/>&nbsp;&nbsp;&nbsp; if success == false {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // False on error or EOF. Check error<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; err = scanner.Err()<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if err == nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Println(&quot;Scan completed and reached EOF&quot;)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } else {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // Get data from scan with Bytes() or Text()<br/>&nbsp;&nbsp;&nbsp; fmt.Println(&quot;First word found:&quot;, scanner.Text())<br/><br/>&nbsp;&nbsp;&nbsp; // Call scanner.Scan() again to find next token<br/>}</code></pre>
+
+
+                                    <a name="archive_create"></a>
+                                    <h2>Archive(Zip) Files</h2>
+
+                                    <pre class="prettyprint"><code>// This example uses zip but standard library<br/>// also supports tar archives<br/>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;archive/zip&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Create a file to write the archive buffer to<br/>&nbsp;&nbsp;&nbsp; // Could also use an in memory buffer.<br/>&nbsp;&nbsp;&nbsp; outFile, err := os.Create(&quot;test.zip&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; defer outFile.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // Create a zip writer on top of the file writer<br/>&nbsp;&nbsp;&nbsp; zipWriter := zip.NewWriter(outFile)<br/><br/><br/>&nbsp;&nbsp;&nbsp; // Add files to archive<br/>&nbsp;&nbsp;&nbsp; // We use some hard coded data to demonstrate,<br/>&nbsp;&nbsp;&nbsp; // but you could iterate through all the files<br/>&nbsp;&nbsp;&nbsp; // in a directory and pass the name and contents<br/>&nbsp;&nbsp;&nbsp; // of each file, or you can take data from your<br/>&nbsp;&nbsp;&nbsp; // program and write it write in to the archive<br/>&nbsp;&nbsp;&nbsp; // without <br/>&nbsp;&nbsp;&nbsp; var filesToArchive = []struct {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name, Body string<br/>&nbsp;&nbsp;&nbsp; } {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {&quot;test.txt&quot;, &quot;String contents of file&quot;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {&quot;test2.txt&quot;, &quot;\x61\x62\x63\n&quot;},<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // Create and write files to the archive, which in turn<br/>&nbsp;&nbsp;&nbsp; // are getting written to the underlying writer to the<br/>&nbsp;&nbsp;&nbsp; // .zip file we created at the beginning<br/>&nbsp;&nbsp;&nbsp; for _, file := range filesToArchive {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fileWriter, err := zipWriter.Create(file.Name)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _, err = fileWriter.Write([]byte(file.Body))<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // Clean up<br/>&nbsp;&nbsp;&nbsp; err = zipWriter.Close()<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>}</code></pre>
+
+
+                                    <a name="archive_extract"></a>
+                                    <h2>Extract(Unzip) Archived Files</h2>
+
+                                    <pre class="prettyprint"><code>// This example uses zip but standard library<br/>// also supports tar archives<br/>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;archive/zip&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;io&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;path/filepath&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Create a reader out of the zip archive<br/>&nbsp;&nbsp;&nbsp; zipReader, err := zip.OpenReader(&quot;test.zip&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; defer zipReader.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // Iterate through each file/dir found in<br/>&nbsp;&nbsp;&nbsp; for _, file := range zipReader.Reader.File {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Open the file inside the zip archive<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // like a normal file<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; zippedFile, err := file.Open()<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; defer zippedFile.Close()<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Specify what the extracted file name should be.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // You can specify a full path or a prefix<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // to move it to a different directory. <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // In this case, we will extract the file from<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // the zip to a file of the same name.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; targetDir := &quot;./&quot;<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; extractedFilePath := filepath.Join(<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; targetDir,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; file.Name,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Extract the item (or create directory)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if file.FileInfo().IsDir() {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Create directories to recreate directory<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // structure inside the zip archive. Also<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // preserves permissions<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Println(&quot;Creating directory:&quot;, extractedFilePath)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; os.MkdirAll(extractedFilePath, file.Mode())<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } else {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Extract regular file since not a directory<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Println(&quot;Extracting file:&quot;, file.Name)<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Open an output file for writing<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; outputFile, err := os.OpenFile(<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; extractedFilePath,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; os.O_WRONLY|os.O_CREATE|os.O_TRUNC,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; file.Mode(),<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; defer outputFile.Close()<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // &quot;Extract&quot; the file by copying zipped file<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // contents to the output file<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _, err = io.Copy(outputFile, zippedFile)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; }<br/>}</code></pre>
+
+
+                                    <a name="compress"></a>
+                                    <h2>Compress a File</h2>
+
+                                    <pre class="prettyprint"><code>// This example uses gzip but standard library also<br/>// supports zlib, bz2, flate, and lzw<br/>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;compress/gzip&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Create .gz file to write to<br/>&nbsp;&nbsp;&nbsp; outputFile, err := os.Create(&quot;test.txt.gz&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // Create a gzip writer on top of file writer<br/>&nbsp;&nbsp;&nbsp; gzipWriter := gzip.NewWriter(outputFile)<br/>&nbsp;&nbsp;&nbsp; defer gzipWriter.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // When we write to the gzip writer<br/>&nbsp;&nbsp;&nbsp; // it will in turn compress the contents<br/>&nbsp;&nbsp;&nbsp; // and then write it to the underlying<br/>&nbsp;&nbsp;&nbsp; // file writer as well<br/>&nbsp;&nbsp;&nbsp; // We don&#039;t have to worry about how all<br/>&nbsp;&nbsp;&nbsp; // the compression works since we just<br/>&nbsp;&nbsp;&nbsp; // use it as a simple writer interface<br/>&nbsp;&nbsp;&nbsp; // that we send bytes to<br/>&nbsp;&nbsp;&nbsp; _, err = gzipWriter.Write([]byte(&quot;Gophers rule!\n&quot;))<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; log.Println(&quot;Compressed data written to file.&quot;) <br/>}</code></pre>
+
+
+                                    <a name="uncompress"></a>
+                                    <h2>Uncompress a File</h2>
+
+                                    <pre class="prettyprint"><code>// This example uses gzip but standard library also<br/>// supports zlib, bz2, flate, and lzw<br/>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;compress/gzip&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;io&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Open gzip file that we want to uncompress<br/>&nbsp;&nbsp;&nbsp; // The file is a reader, but we could use any<br/>&nbsp;&nbsp;&nbsp; // data source. It is common for web servers<br/>&nbsp;&nbsp;&nbsp; // to return gzipped contents to save bandwidth<br/>&nbsp;&nbsp;&nbsp; // and in that case the data is not in a file<br/>&nbsp;&nbsp;&nbsp; // on the file system but is in a memory buffer<br/>&nbsp;&nbsp;&nbsp; gzipFile, err := os.Open(&quot;test.txt.gz&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // Create a gzip reader on top of the file reader<br/>&nbsp;&nbsp;&nbsp; // Again, it could be any type reader though<br/>&nbsp;&nbsp;&nbsp; gzipReader, err := gzip.NewReader(gzipFile)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; defer gzipReader.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // Uncompress to a writer. We&#039;ll use a file writer<br/>&nbsp;&nbsp;&nbsp; outfileWriter, err := os.Create(&quot;unzipped.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; defer outfileWriter.Close()<br/><br/>&nbsp;&nbsp;&nbsp; // Copy contents of gzipped file to output file<br/>&nbsp;&nbsp;&nbsp; _, err = io.Copy(outfileWriter, gzipReader)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>}</code></pre>
+
+
+                                    <a name="temp_files"></a>
+                                    <h2>Temporary Files and Directories</h2>
+
+                                    <p>The <strong>ioutil</strong> package provides two functions: TempDir() and
+                                        TempFile(). It is the callers responsibility to delete the temporary items when
+                                        done. The only benefit these functions provide is that you can pass it an empty
+                                        string for the directory, and it will automatically create the item in the
+                                        system's default temporary folder (/tmp on Linux). Since
+                                        <strong>os.TempDir()</strong> function that will return the defauly system
+                                        temporary directory.</p>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp;&nbsp; &quot;io/ioutil&quot;<br/>&nbsp;&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp;&nbsp; &quot;fmt&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp;&nbsp; // Create a temp dir in the system default temp folder<br/>&nbsp;&nbsp;&nbsp;&nbsp; tempDirPath, err := ioutil.TempDir(&quot;&quot;, &quot;myTempDir&quot;)<br/>&nbsp;&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp;&nbsp; fmt.Println(&quot;Temp dir created:&quot;, tempDirPath)<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp; // Create a file in new temp directory<br/>&nbsp;&nbsp;&nbsp;&nbsp; tempFile, err := ioutil.TempFile(tempDirPath, &quot;myTempFile.txt&quot;)<br/>&nbsp;&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp;&nbsp; fmt.Println(&quot;Temp file created:&quot;, tempFile.Name())<br/>&nbsp;&nbsp;&nbsp;&nbsp; <br/>&nbsp;&nbsp;&nbsp;&nbsp; // ... do something with temp file/dir ...<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp; // Close file<br/>&nbsp;&nbsp;&nbsp;&nbsp; err = tempFile.Close()<br/>&nbsp;&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // Delete the resources we created<br/>&nbsp;&nbsp;&nbsp;&nbsp; err = os.Remove(tempFile.Name())<br/>&nbsp;&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp;&nbsp; err = os.Remove(tempDirPath)<br/>&nbsp;&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>}</code></pre>
+
+
+                                    <a name="http_download"></a>
+                                    <h2>Downloading a File Over HTTP</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>&nbsp;&nbsp;&nbsp;&nbsp; &quot;io&quot;<br/>&nbsp;&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp;&nbsp; &quot;net/http&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp;&nbsp; // Create output file<br/>&nbsp;&nbsp;&nbsp;&nbsp; newFile, err := os.Create(&quot;devdungeon.html&quot;)<br/>&nbsp;&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp;&nbsp; defer newFile.Close()<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp; // HTTP GET request devdungeon.com <br/>&nbsp;&nbsp;&nbsp;&nbsp; url := &quot;http://www.devdungeon.com/archive&quot;<br/>&nbsp;&nbsp;&nbsp;&nbsp; response, err := http.Get(url)<br/>&nbsp;&nbsp;&nbsp;&nbsp; defer response.Body.Close()<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp; // Write bytes from HTTP response to file.<br/>&nbsp;&nbsp;&nbsp;&nbsp; // response.Body satisfies the reader interface.<br/>&nbsp;&nbsp;&nbsp;&nbsp; // newFile satisfies the writer interface.<br/>&nbsp;&nbsp;&nbsp;&nbsp; // That allows us to use io.Copy which accepts<br/>&nbsp;&nbsp;&nbsp;&nbsp; // any type that implements reader and writer interface<br/>&nbsp;&nbsp;&nbsp;&nbsp; numBytesWritten, err := io.Copy(newFile, response.Body)<br/>&nbsp;&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp;&nbsp; log.Printf(&quot;Downloaded %d byte file.\n&quot;, numBytesWritten)<br/>}</code></pre>
+
+
+                                    <a name="hashing"></a>
+                                    <h2>Hashing and Checksums</h2>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;crypto/md5&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;crypto/sha1&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;crypto/sha256&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;crypto/sha512&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;fmt&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;io/ioutil&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Get bytes from file<br/>&nbsp;&nbsp;&nbsp; data, err := ioutil.ReadFile(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // Hash the file and output results<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Md5: %x\n\n&quot;, md5.Sum(data))<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Sha1: %x\n\n&quot;, sha1.Sum(data))<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Sha256: %x\n\n&quot;, sha256.Sum256(data))<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Sha512: %x\n\n&quot;, sha512.Sum512(data))<br/>}</code></pre>
+                                    <p>The example above copies the entire file in to memory. This was for convenience
+                                        to pass it as a parameter to each of the hash functions. Another approach is to
+                                        create the hash writer interface and write to it using Write(), WriteString(),
+                                        or in this case, Copy(). The example below uses the md5 hash, but you can switch
+                                        to use any of the others that are supported.</p>
+
+                                    <pre class="prettyprint"><code>package main<br/><br/>import (<br/>&nbsp;&nbsp;&nbsp; &quot;crypto/md5&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;log&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;fmt&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;io&quot;<br/>&nbsp;&nbsp;&nbsp; &quot;os&quot;<br/>)<br/><br/>func main() {<br/>&nbsp;&nbsp;&nbsp; // Open file for reading<br/>&nbsp;&nbsp;&nbsp; file, err := os.Open(&quot;test.txt&quot;)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/>&nbsp;&nbsp;&nbsp; defer file.Close()<br/>&nbsp;&nbsp;&nbsp; <br/>&nbsp;&nbsp;&nbsp; // Create new hasher, which is a writer interface<br/>&nbsp;&nbsp;&nbsp; hasher := md5.New()<br/>&nbsp;&nbsp;&nbsp; _, err = io.Copy(hasher, file)<br/>&nbsp;&nbsp;&nbsp; if err != nil {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.Fatal(err)<br/>&nbsp;&nbsp;&nbsp; }<br/><br/>&nbsp;&nbsp;&nbsp; // Hash and print. Pass nil since<br/>&nbsp;&nbsp;&nbsp; // the data is not coming in as a slice argument<br/>&nbsp;&nbsp;&nbsp; // but is coming through the writer interface<br/>&nbsp;&nbsp;&nbsp; sum := hasher.Sum(nil)<br/>&nbsp;&nbsp;&nbsp; fmt.Printf(&quot;Md5 checksum: %x\n&quot;, sum)<br/>}</code></pre>
+
+
+                                    <script src="https://www.devdungeon.com/sites/default/files/js/js_MRdvkC2u4oGsp5wVxBG1pGV5NrCPW3mssHxIn6G9tGE.js"></script>
+</body>
+</html>

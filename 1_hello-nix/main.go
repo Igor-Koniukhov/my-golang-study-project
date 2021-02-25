@@ -7,5 +7,5 @@ import (
 
 func main(){
 	fmt.Println("Hello Nix!")
-	log.Println("Hello Nex!")
+	log.Println("Hello Nix!")
 }
